@@ -12,7 +12,8 @@
     "sha.js": "^2.4.11"
   },
   "devDependencies": {
-    "typescript": "^5.0.0",
-    "ts-node": "^10.9.1"
+    "@types/node": "^25.3.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
   }
 }
