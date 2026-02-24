@@ -4,12 +4,21 @@
   "description": "Append-only public record ledger for all 100 U.S. Senators with cryptographic sealing.",
   "main": "src/cli/index.ts",
   "scripts": {
-    "test": "ts-node tests/*.test.ts"
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/cli/index.js",
+    "cli": "node dist/cli/index.js",
+    "dev": "ts-node src/cli/index.ts",
+    "test": "ts-node -P tsconfig.test.json tests/*.test.ts",
+    "postbuild": "node scripts/add-shebang.js"
   },
   "dependencies": {
     "ajv": "^8.12.0",
+    "ajv-formats": "^3.0.1",
     "commander": "^10.0.0",
     "sha.js": "^2.4.11"
+  },
+  "bin": {
+    "halo": "dist/cli/index.js"
   },
   "devDependencies": {
     "@types/node": "^25.3.0",

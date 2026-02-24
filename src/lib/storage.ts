@@ -1,3 +1,14 @@
+export async function ensureDir(dirPath: string): Promise<void> {
+  if (!fs.existsSync(dirPath)) {
+    fs.mkdirSync(dirPath, { recursive: true });
+  }
+}
+
+export async function writeFileAtomic(filePath: string, data: string): Promise<void> {
+  const tmpPath = filePath + ".tmp";
+  fs.writeFileSync(tmpPath, data);
+  fs.renameSync(tmpPath, filePath);
+}
 import fs from 'fs';
 import path from 'path';
 

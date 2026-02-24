@@ -1,0 +1,19 @@
+[
+  {
+    "subject_id": "S000148",
+    "congress": 118,
+    "session": 2,
+    "roll_call": 42,
+    "bill_id": "S.1234",
+    "nomination_id": null,
+    "question": "On Passage of the Bill",
+    "description": "A bill to improve transparency.",
+    "result": "Passed",
+    "vote_position": "Yea",
+    "occurred_at": "2024-01-15T14:30:00Z",
+    "retrieved_at": "2024-01-15T15:00:00Z",
+    "source_url": "https://www.congress.gov/bill/118th-congress/senate-bill/1234",
+    "content_hash": "abc123def456",
+    "excerpt": "The Senate voted Yea on S.1234."
+  }
+]

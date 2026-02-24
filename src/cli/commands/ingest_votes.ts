@@ -37,16 +37,11 @@ function requireEnum<T extends readonly string[]>(
     throw new Error(`${label} must be one of: ${allowed.join(", ")} (got: ${value})`);
   }
 }
-  requireEnum("event_type", eventCore.event_type, EVENT_TYPE_ENUM);
-  requireEnum("receipt.artifact_type", receipt.artifact_type, RECEIPT_ARTIFACT_TYPE_ENUM);
-  requireEnum("receipt.artifact_schema", receipt.artifact_schema, RECEIPT_ARTIFACT_SCHEMA_ENUM);
-  requireEnum("source.kind", source_kind, SOURCE_KIND_ENUM);
-  requireEnum("evidence.content_type", content_type, EVIDENCE_CONTENT_TYPE_ENUM);
 import fs from "node:fs";
 import path from "node:path";
 import { canonicalize } from "../../lib/canonical";
 import { sha256Canonical } from "../../lib/hash";
-import { validateEvent } from "../../lib/validate";
+import { validateOrThrow } from "../../lib/validate";
 import { writeJson } from "../../lib/storage";
 import { createReceipt } from "../../lib/receipts";
 
@@ -56,21 +51,21 @@ import { createReceipt } from "../../lib/receipts";
  * Output: append-only event artifacts written to:
  *   data/events/<subject_id>/<artifact_hash>.json
  */
-export default async function ingestVotes(opts?: {
-  repoRoot?: string;
-  inputPath?: string;
-  publisher?: string;
-}) {
-  const repoRoot = opts?.repoRoot || process.cwd();
-  const inputPath = opts?.inputPath || path.join(repoRoot, "data", "seeds", "votes_seed.json");
+export default async function ingestVotes(opts: { inputPath: string; repoRoot?: string; publisher?: string }) {
+  if (!opts?.inputPath) {
+    throw new Error("Usage: ingest_votes <inputPath>\nYou must provide a path to the vote ingestion JSON input file.");
+  }
+  const resolvedPath = path.resolve(process.cwd(), opts.inputPath);
+  if (!fs.existsSync(resolvedPath)) {
+    throw new Error(`Input file not found: ${resolvedPath}`);
+  }
   const publisher = opts?.publisher || "congress.gov";
-
-  const raw = fs.readFileSync(inputPath, "utf8");
+  const raw = fs.readFileSync(resolvedPath, "utf8");
   const parsed = JSON.parse(raw);
   if (!Array.isArray(parsed)) {
-    throw new Error(`ingest_votes: input must be a JSON array: ${inputPath}`);
+    throw new Error(`ingest_votes: input must be a JSON array: ${resolvedPath}`);
   }
-
+  const repoRoot = opts?.repoRoot || process.cwd();
   const outBase = path.join(repoRoot, "data", "events");
 
   for (const row of parsed) {
@@ -111,9 +106,7 @@ export default async function ingestVotes(opts?: {
     };
 
     // Validate event core before hashing
-    if (!validateEvent(eventCore)) {
-      throw new Error(`ingest_votes: event schema validation failed: ${JSON.stringify(validateEvent.errors)}`);
-    }
+    validateOrThrow("halo.event.v1", eventCore);
 
     // Canonicalize and hash WITHOUT receipt
     const canonical = canonicalize(eventCore);
@@ -137,9 +130,7 @@ export default async function ingestVotes(opts?: {
     const artifact = { ...eventCore, receipt };
 
     // Validate final artifact
-    if (!validateEvent(artifact)) {
-      throw new Error(`ingest_votes: event+receipt schema validation failed: ${JSON.stringify(validateEvent.errors)}`);
-    }
+    validateOrThrow("halo.event.v1", artifact);
 
     // Append-only write: filename = artifact_hash
     const dir = path.join(outBase, norm.subject_id);
@@ -173,13 +164,9 @@ function normalizeVotePosition(v: unknown): VotePosition {
   if (s === "not voting" || s === "not_voting" || s === "absent") return "Not Voting";
 
   // Accept exact enum values (case-sensitive)
-  if ((POSITION_ENUM as readonly string[]).includes(raw)) {
-    requireEnum("payload.position", raw, POSITION_ENUM);
-    return raw as VotePosition;
-  }
-  throw new Error(`ingest_votes: invalid payload.position: ${String(v)}`);
+  requireEnum("payload.position", raw, POSITION_ENUM);
+  return raw as VotePosition;
 }
-  requireEnum("payload.position", position, POSITION_ENUM);
 
 function requireIso8601(label: string, v: unknown): string {
   if (typeof v !== "string" || v.trim().length === 0) {
@@ -232,6 +219,9 @@ function normalizeVoteInput(row: any): {
   if (!result) throw new Error("ingest_votes: missing result");
   const description = row.description == null ? null : String(row.description).trim();
   const vote_position = normalizeVotePosition(row.vote_position);
+  requireEnum("event_type", "vote", EVENT_TYPE_ENUM);
+  requireEnum("source.kind", "congress", SOURCE_KIND_ENUM);
+  requireEnum("evidence.content_type", "text", EVIDENCE_CONTENT_TYPE_ENUM);
   const bill_id = row.bill_id == null ? null : String(row.bill_id).trim();
   const nomination_id = row.nomination_id == null ? null : String(row.nomination_id).trim();
   const content_hash = row.content_hash == null ? "" : String(row.content_hash).trim();

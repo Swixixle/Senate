@@ -80,37 +80,57 @@ artifact_hash = sha256(canonical_json(core_without_receipt))
 
 The `verify` command enforces:
 
-* Schema validation
-* Canonical hash correctness
-* Receipt integrity
-* Filename ↔ artifact_hash consistency (events and indexes)
-* Append-only collision protection
-
-Verification failure results in a non-zero exit.
 
 ---
 
-## Development
+## Quickstart (Offline)
 
-### Install
+Requirements:
+- Node.js 20+
 
+Install dependencies:
 ```
-npm install
-```
-
-### Run Tests
-
-```
-npm test
+* A social network
 ```
 
-Test coverage enforces:
+Build the CLI:
+```
 
-* Deterministic re-ingestion
-* Schema enum lock (drift detection)
-* Receipt exclusion from hashing
-* Seed installation append-only guarantees
-* Storage collision protection
+```
+
+Show CLI help:
+```
+It is a structured public memory system.
+```
+
+## CLI Usage
+
+Initialize senator seeds:
+```
+
+```
+
+Ingest votes from a local fixture:
+```
+---
+```
+
+Verify all artifacts:
+```
+
+```
+
+## Data Layout
+
+- data/senators/<subject_id>.json
+- data/events/<subject_id>/<artifact_hash>.json
+
+## Determinism Contract
+
+- No runtime timestamps in artifacts
+- artifact_hash excludes receipt
+- Filenames derived from artifact_hash
+- Append-only: collision if bytes differ
 
 ---
 
@@ -118,16 +138,20 @@ Test coverage enforces:
 
 This system is not:
 
-* A news publication
-* A political commentary engine
-* A corruption allegation platform
-* A scoring or ranking system
-* A social network
+- A news publication
+- A political commentary engine
+- A corruption allegation platform
+- A scoring or ranking system
+- A social network
 
 It is a structured public memory system.
 
 ---
 
+## Governance Model
+
+The tool records verifiable facts tied to primary sources.
+Interpretation and analysis occur outside the system.
 ## Governance Model
 
 The tool records verifiable facts tied to primary sources.

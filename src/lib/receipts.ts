@@ -1,5 +1,5 @@
 import { sha256Canonical } from './hash';
-import { validateSenator, validateEvent } from './validate';
+import { validateOrThrow } from './validate';
 
 export function createReceipt(artifact: any, artifactType: 'senator' | 'event', issuerVersion: string): any {
   // Remove receipt field if present
@@ -7,10 +7,8 @@ export function createReceipt(artifact: any, artifactType: 'senator' | 'event', 
   if (artifactCopy.receipt) delete artifactCopy.receipt;
 
   // Validate artifact
-  const validator = artifactType === 'senator' ? validateSenator : validateEvent;
-  if (!validator(artifactCopy)) {
-    throw new Error('Artifact validation failed');
-  }
+  const schemaId = artifactType === 'senator' ? 'halo.senator.v1' : 'halo.event.v1';
+  validateOrThrow(schemaId, artifactCopy);
 
   const artifactHash = sha256Canonical(artifactCopy);
   const receipt = {

@@ -1,36 +1,30 @@
 
+
 import Ajv from 'ajv';
-import senatorSchema from '../schema/senator.schema.json';
-import eventSchema from '../schema/event.schema.json';
+import addFormats from 'ajv-formats';
 import receiptSchema from '../schema/receipt.schema.json';
+import senatorSchema from '../schema/senator.schema.json';
 import senatorSeedSchema from '../schema/senator_seed.schema.json';
+import eventSchema from '../schema/event.schema.json';
 
-const ajv = new Ajv({ allErrors: true });
-export const validateSenator = ajv.compile(senatorSchema);
-export const validateEvent = ajv.compile(eventSchema);
-export const validateReceipt = ajv.compile(receiptSchema);
-export const validateSenatorSeed = ajv.compile(senatorSeedSchema);
+const ajv = new Ajv({ allErrors: true, strict: true });
+addFormats(ajv);
 
-export function validateOrThrow(type: 'senator' | 'event' | 'receipt' | 'senator_seed', obj: any) {
-	let valid = false;
-	switch (type) {
-		case 'senator':
-			valid = validateSenator(obj);
-			if (!valid) throw new Error('Senator schema validation failed: ' + JSON.stringify(validateSenator.errors));
-			break;
-		case 'event':
-			valid = validateEvent(obj);
-			if (!valid) throw new Error('Event schema validation failed: ' + JSON.stringify(validateEvent.errors));
-			break;
-		case 'receipt':
-			valid = validateReceipt(obj);
-			if (!valid) throw new Error('Receipt schema validation failed: ' + JSON.stringify(validateReceipt.errors));
-			break;
-		case 'senator_seed':
-			valid = validateSenatorSeed(obj);
-			if (!valid) throw new Error('Senator seed schema validation failed: ' + JSON.stringify(validateSenatorSeed.errors));
-			break;
-		default:
-			throw new Error('Unknown schema type: ' + type);
-	}
+// Register schemas in dependency order
+ajv.addSchema(receiptSchema);
+ajv.addSchema(senatorSchema);
+ajv.addSchema(senatorSeedSchema);
+ajv.addSchema(eventSchema);
+
+/**
+ * Validate data against a registered schema by $id. Throws on failure.
+ * @param schemaId - The $id of the schema (e.g. "halo.event.v1")
+ * @param data - The data to validate
+ */
+export function validateOrThrow(schemaId: string, data: unknown): void {
+  const validate = ajv.getSchema(schemaId);
+  if (!validate) throw new Error(`Schema not registered: ${schemaId}`);
+  if (!validate(data)) {
+    throw new Error(`Schema validation failed for ${schemaId}: ${ajv.errorsText(validate.errors, { dataVar: 'data' })}`);
+  }
 }

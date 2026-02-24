@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import { Command } from 'commander';
 import init from './commands/init';
 import ingestVotes from './commands/ingest_votes';
@@ -12,7 +13,8 @@ program
 program
   .command('ingest_votes')
   .description('Ingest voting events')
-  .action(ingestVotes);
+  .argument('<inputPath>', 'Path to vote ingestion JSON input file')
+  .action((inputPath: string) => ingestVotes({ inputPath }));
 
 program
   .command('verify')
