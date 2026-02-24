@@ -1,0 +1,80 @@
+{
+  "$id": "halo.senator_seed.v1",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "SenatorSeed",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "subject_id",
+    "full_name",
+    "last_name",
+    "first_name",
+    "middle_name",
+    "state",
+    "party",
+    "chamber",
+    "class",
+    "term_start",
+    "term_end",
+    "salary",
+    "committees",
+    "identifiers",
+    "sources",
+    "created_at",
+    "updated_at"
+  ],
+  "properties": {
+    "schema_version": { "type": "string", "const": "halo.senator.v1" },
+    "subject_id": { "type": "string" },
+    "full_name": { "type": "string" },
+    "last_name": { "type": "string" },
+    "first_name": { "type": "string" },
+    "middle_name": { "type": ["string", "null"] },
+    "state": { "type": "string", "pattern": "^[A-Z]{2}$" },
+    "party": { "type": "string", "enum": ["R", "D", "I", "Other"] },
+    "chamber": { "type": "string", "const": "senate" },
+    "class": { "type": "integer", "enum": [1, 2, 3] },
+    "term_start": { "type": "string", "format": "date" },
+    "term_end": { "type": "string", "format": "date" },
+    "salary": { "type": "number", "default": 174000 },
+    "dc_office": {
+      "type": "object",
+      "properties": {
+        "address": { "type": "string" },
+        "phone": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "committees": { "type": "array", "items": { "type": "string" } },
+    "caucuses": { "type": "array", "items": { "type": "string" }, "default": [] },
+    "identifiers": {
+      "type": "object",
+      "properties": {
+        "fec_candidate_id": { "type": "string" },
+        "govtrack_id": { "type": "string" },
+        "propublica_id": { "type": "string" },
+        "bioguide_id": { "type": "string" },
+        "opensecrets_id": { "type": "string" },
+        "wikidata_id": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "sources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["kind", "url", "retrieved_at"],
+        "properties": {
+          "kind": { "type": "string", "enum": ["bioguide", "govtrack", "propublica", "fec", "manual"] },
+          "url": { "type": "string", "format": "uri" },
+          "retrieved_at": { "type": "string", "format": "date-time" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "created_at": { "type": "string", "format": "date-time" },
+    "updated_at": { "type": "string", "format": "date-time" }
+  },
+  "not": { "required": ["receipt"] },
+  "additionalProperties": false
+}

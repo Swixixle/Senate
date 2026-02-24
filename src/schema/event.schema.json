@@ -1,0 +1,97 @@
+{
+  "$id": "halo.event.v1",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Event",
+  "type": "object",
+  "required": [
+    "event_id",
+    "schema_version",
+    "subject_id",
+    "event_type",
+    "occurred_at",
+    "captured_at",
+    "source",
+    "evidence",
+    "payload",
+    "receipt"
+  ],
+  "properties": {
+    "event_id": { "type": "string" },
+    "schema_version": { "type": "string", "const": "halo.event.v1" },
+    "subject_id": { "type": "string" },
+    "event_type": {
+      "type": "string",
+      "enum": [
+        "vote",
+        "bill_sponsorship",
+        "donation",
+        "statement",
+        "press_release",
+        "media_appearance",
+        "filing",
+        "correction",
+        "retraction",
+        "note"
+      ]
+    },
+    "occurred_at": { "type": "string", "format": "date-time" },
+    "captured_at": { "type": "string", "format": "date-time" },
+    "source": {
+      "type": "object",
+      "required": ["kind", "name", "url", "retrieved_at"],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": ["congress", "senate", "fec", "court", "publisher", "press_release", "other"]
+        },
+        "name": { "type": "string" },
+        "url": { "type": "string", "format": "uri" },
+        "retrieved_at": { "type": "string", "format": "date-time" }
+      },
+      "additionalProperties": false
+    },
+    "evidence": {
+      "type": "object",
+      "required": ["primary_url", "content_hash", "content_type"],
+      "properties": {
+        "primary_url": { "type": "string", "format": "uri" },
+        "content_hash": { "type": "string" },
+        "content_type": { "type": "string", "enum": ["text", "html", "pdf", "json"] },
+        "excerpt": { "type": "string", "maxLength": 500 }
+      },
+      "additionalProperties": false
+    },
+    "payload": {
+      "type": "object",
+      "oneOf": [
+        {
+          "properties": {
+            "congress": { "type": "integer" },
+            "session": { "type": "integer" },
+            "roll_call": { "type": "integer" },
+            "bill_id": { "type": ["string", "null"] },
+            "nomination_id": { "type": ["string", "null"] },
+            "question": { "type": "string" },
+            "description": { "type": "string" },
+            "position": { "type": "string", "enum": ["Yea", "Nay", "Present", "Not Voting"] },
+            "result": { "type": "string" },
+            "vote_url": { "type": "string", "format": "uri" }
+          },
+          "required": [
+            "congress",
+            "session",
+            "roll_call",
+            "question",
+            "description",
+            "position",
+            "result",
+            "vote_url"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "receipt": { "$ref": "receipt.schema.json" }
+  },
+  "additionalProperties": false
+}

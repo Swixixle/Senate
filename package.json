@@ -1,0 +1,18 @@
+{
+  "name": "senate-accountability-tool",
+  "version": "0.1.0",
+  "description": "Append-only public record ledger for all 100 U.S. Senators with cryptographic sealing.",
+  "main": "src/cli/index.ts",
+  "scripts": {
+    "test": "ts-node tests/*.test.ts"
+  },
+  "dependencies": {
+    "ajv": "^8.12.0",
+    "commander": "^10.0.0",
+    "sha.js": "^2.4.11"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "ts-node": "^10.9.1"
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "$id": "halo.receipt.v1",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Receipt",
+  "type": "object",
+  "required": [
+    "receipt_id",
+    "schema_version",
+    "issued_at",
+    "issuer",
+    "subject_id",
+    "artifact_type",
+    "artifact_hash",
+    "artifact_schema"
+  ],
+  "properties": {
+    "receipt_id": { "type": "string" },
+    "schema_version": { "type": "string", "const": "halo.receipt.v1" },
+    "issued_at": { "type": "string", "format": "date-time" },
+    "issuer": {
+      "type": "object",
+      "required": ["system", "version"],
+      "properties": {
+        "system": { "type": "string", "const": "senate-accountability-tool" },
+        "version": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "subject_id": { "type": "string" },
+    "artifact_type": { "type": "string", "enum": ["senator", "event"] },
+    "artifact_hash": { "type": "string" },
+    "artifact_schema": { "type": "string", "enum": ["halo.senator.v1", "halo.event.v1"] },
+    "evidence_hash": { "type": "string" },
+    "signatures": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": []
+    }
+  },
+  "additionalProperties": false
+}
