@@ -1,0 +1,16 @@
+# Repository settings managed as code.
+# Applied by the GitHub Settings App (https://github.com/apps/settings) if installed.
+
+repository:
+  description: "Append-only, cryptographically-sealed public ledger for all 100 U.S. Senators."
+  topics:
+    - accountability
+    - typescript
+    - cli
+    - public-records
+    - open-data
+    - senate
+    - politics
+    - transparency
+    - cryptography
+    - append-only
