@@ -1,4 +1,3 @@
-tests/
 # Senate Accountability Tool
 
 An append-only, evidence-first public ledger for all 100 United States Senators.
